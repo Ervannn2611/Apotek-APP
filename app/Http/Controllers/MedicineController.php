@@ -13,10 +13,10 @@ class MedicineController extends Controller
     public function index(Request $request) {
         // Mengatur pengurutan berdasarkan stok obat
         $orderStock = $request->sort_stock == 'stock' ? 'ASC' : 'DESC';
-        
+
         // Mengambil data obat dan mengurutkannya berdasarkan stok
         $medicines = Medicine::orderby('stock', $orderStock)->simplePaginate(5)->appends($request->all());
-        
+
         // Mengatur pengurutan berdasarkan stok besar/ kecil
         $orderStock = $request->large_stock == 'stock' ? 'DESC' : 'ASC';
         $medicines = Medicine::orderby('stock', $orderStock)->simplePaginate(5)->appends($request->all());
@@ -29,7 +29,7 @@ class MedicineController extends Controller
         // Mengembalikan view dengan data obat
         return view('medicine.index', compact('medicines'));
     }
-    
+
 
     /**
      * C: Create, menampilkan form untuk menambahkan data
@@ -45,6 +45,7 @@ class MedicineController extends Controller
      */
     public function store(Request $request)
     {
+
         // Validasi input dari form
         $request->validate([
             'name' => 'required|max:100',    // Nama harus diisi dan maksimal 100 karakter
@@ -63,16 +64,20 @@ class MedicineController extends Controller
             'stock.numeric' => 'Stok harus numerik',
         ]);
 
-        // Menyimpan data obat baru ke database
-        Medicine::create([
-            'name' => $request->name,
-            'type' => $request->type,
-            'price' => $request->price,
-            'stock' => $request->stock,
-        ]);
+        try {
+            // Menyimpan data obat baru ke database
+            Medicine::create([
+                'name' => $request->name,
+                'type' => $request->type,
+                'price' => $request->price,
+                'stock' => $request->stock,
+            ]);
 
-        // Mengalihkan kembali dengan pesan sukses
-        return redirect()->back()->with('success', 'Data berhasil ditambahkan!');
+            // Mengalihkan kembali dengan pesan sukses
+            return redirect()->back()->with('success', 'Data berhasil ditambahkan!');
+        } catch (\Throwable $th) {
+            return back()->with('failed', 'Data gagal ditambahkan!')->withInput();
+        }
     }
 
     /**
@@ -90,7 +95,7 @@ class MedicineController extends Controller
     {
         // Mengambil data obat berdasarkan ID untuk diedit
         $data = Medicine::find($id);
-        
+
         // Mengembalikan view untuk form edit obat
         return view('medicine.edit', [
             'item' => $data
@@ -123,7 +128,7 @@ class MedicineController extends Controller
             'type' => $request->type,
             'price' => $request->price,
         ]);
-        
+
         // Mengalihkan ke route yang ditentukan dengan pesan sukses
         return redirect()->route('obat.data')->with('success', 'Data berhasil Diubah!');
     }
@@ -144,7 +149,7 @@ class MedicineController extends Controller
                 'stock' => $dataSebelumnya->stock,
             ]);
         }
-        
+
         // Mengupdate stok obat berdasarkan ID
         Medicine::where('id', $id)->update([
             'stock' => $request->stock,

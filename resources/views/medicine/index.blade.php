@@ -4,59 +4,72 @@
 @if (Session::get('success'))
     <div class="alert alert-success">{{ Session::get('success') }}</div>
 @endif
-<div class="container">
+<div class="container mt-4">
+
+
     <!-- Search and Add Button Section -->
-    <div class="row mb-3">
+    <div class="row mb-4">
         <!-- Search Form -->
         <div class="col-lg-6 col-md-6 mb-2">
             <form class="d-flex" role="search" action="{{ route('obat.data') }}" method="GET">
-                <input type="text" class="form-control me-2" name="search" placeholder="Search" aria-label="Search">
-                <button class="btn btn-outline-success" type="submit">Search</button>
+                <input type="text" class="form-control me-2" name="search" placeholder="Cari Obat" aria-label="Search">
+                <button class="btn btn-outline-success" type="submit">Cari</button>
             </form>
         </div>
         <!-- Add and Sorting Buttons -->
         <div class="col-lg-6 col-md-6 d-flex justify-content-end">
-            <a class="btn btn-primary mx-2 mb-2" href="{{ route('obat.tambah_obat') }}">Tambah</a>
+            <a class="btn btn-primary mx-2 mb-2" href="{{ route('obat.tambah_obat') }}">
+                <i class="fas fa-plus"></i> Tambah Obat
+            </a>
             <form action="{{ route('obat.data') }}" method="GET" class="me-2">
                 <input type="hidden" name="sort_stock" value="stock">
-                <button type="submit" class="btn btn-primary">Stok Kecil</button>
+                <button type="submit" class="btn btn-warning">Stok Kecil</button>
             </form>
             <form action="{{ route('obat.data') }}" method="GET" class="me-2">
                 <input type="hidden" name="large_stock" value="stock">
-                <button type="submit" class="btn btn-primary">Stok Besar</button>
+                <button type="submit" class="btn btn-info">Stok Besar</button>
             </form>
         </div>
+    </div>
+    <div class="mb-4">
+        <h1 class="text-center">Data Obat</h1>
     </div>
 
     <!-- Medicines Table -->
     <div class="table-responsive">
-        <table class="table table-bordered table-striped">
-            <thead class="table-primary">
+        <table class="table table-bordered table-hover table-striped align-middle">
+            <thead class="table-primary text-center">
                 <tr>
                     <th>#</th>
-                    <th>Name</th>
-                    <th>Type</th>
-                    <th>Price</th>
-                    <th>Stock</th>
-                    <th>Actions</th>
+                    <th>Nama Obat</th>
+                    <th>Jenis</th>
+                    <th>Harga</th>
+                    <th>Stok</th>
+                    <th>Aksi</th>
                 </tr>
             </thead>
             <tbody>
                 @if (count($medicines) < 1)
                     <tr>
-                        <td colspan="6" class="text-center">Data Obat Kosong</td>
+                        <td colspan="6" class="text-center text-muted">Data Obat Kosong</td>
                     </tr>
                 @else
                     @foreach ($medicines as $index => $item)
                         <tr>
-                            <td>{{ ($medicines->currentPage() - 1) * $medicines->perPage() + ($index + 1) }}</td>
+                            <td class="text-center">{{ ($medicines->currentPage() - 1) * $medicines->perPage() + ($index + 1) }}</td>
                             <td>{{ $item->name }}</td>
                             <td>{{ $item->type }}</td>
-                            <td>Rp. {{ number_format($item->price, 0, ',', '.') }}</td>
-                            <td class="{{ $item->stock <= 3 ? 'bg-danger text-white' : '' }}" style="cursor: pointer" onclick="showModalStock({{ $item->id }}, '{{ $item->stock }}')">{{ $item->stock }}</td>
-                            <td class="d-flex">
-                                <a href="{{ route('obat.edit', $item->id) }}" class="btn btn-primary me-2">Edit</a>
-                                <button class="btn btn-danger" onclick="showModalDelete({{ $item->id }}, '{{ $item->name }}')">Hapus</button>
+                            <td class="text-center">Rp. {{ number_format($item->price, 0, ',', '.') }}</td>
+                            <td class="text-center {{ $item->stock <= 3 ? 'bg-danger text-white' : '' }}" style="cursor: pointer" onclick="showModalStock({{ $item->id }}, '{{ $item->stock }}')">
+                                {{ $item->stock }}
+                            </td>
+                            <td class="d-flex justify-content-center">
+                                <a href="{{ route('obat.edit', $item->id) }}" class="btn btn-sm btn-primary me-2">
+                                    <i class="fas fa-edit"></i> Edit
+                                </a>
+                                <button class="btn btn-sm btn-danger" onclick="showModalDelete({{ $item->id }}, '{{ $item->name }}')">
+                                    <i class="fas fa-trash-alt"></i> Hapus
+                                </button>
                             </td>
                         </tr>
                     @endforeach
@@ -107,13 +120,13 @@
                     <div class="modal-body">
                         <div class="form-group">
                             <label for="stock_edit" class="form-label">Stok: </label>
-                            <input type="number" class="form-control" id="stock_edit" name="stock">
+                            <input type="number" class="form-control" id="stock_edit" name="stock" required>
                             @if(Session::get('failed'))
-                            <small class="text-danger">{{ Session::get('failed') }}</small>
+                                <small class="text-danger">{{ Session::get('failed') }}</small>
                             @endif
                         </div>
-                        <div class="modal-footer">
                     </div>
+                    <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batalkan</button>
                         <button type="submit" class="btn btn-primary">Edit</button>
                     </div>
@@ -145,13 +158,9 @@
     }
 
     @if(Session::get('failed'))
-    // jika halaman htmlnya sudah selesai load cdn, jalankan didalamnya
     $(document).ready(function() {
-        //id dari with failed 'id' controller redirect back 
         let id = "{{ Session::get('id') }}";
-        //stock dari with failed 'stock' controller redirect back
         let stock = "{{ Session::get('stock') }}";
-        //panggil func ShowModalStock dengan data id dan stock diatas
         showModalStock(id, stock);
     });
     @endif

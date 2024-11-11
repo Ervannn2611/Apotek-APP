@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 
 class UserController extends Controller
@@ -11,6 +12,34 @@ class UserController extends Controller
     /**
      * Display a listing of the resource.
      */
+
+     public function showLogin()
+     {
+         return view('pages.login');
+     }
+
+
+    public function loginAuth(request $request)
+    {
+        $request->validate([
+            'email' => 'required',
+            'password' => 'required',
+        ]);
+
+        $user = $request->only('email', 'password');
+       if(Auth::attempt($user)){
+           return redirect()->route('landing_page')->with('success', 'Berhasil Login!');
+       }else{
+           return redirect()->back()->with('failed', 'Gagal Login!');
+       }
+    }
+    public function logout()
+    {
+        Auth::logout();
+        return redirect()->route('login')->with('success', 'Berhasil Logout!');
+    }
+
+
     public function index(request $request)
     {
         //
@@ -28,7 +57,8 @@ class UserController extends Controller
         if ($request->has('role') && $request->has('search')) {
             $data_user = User::where('role', $request->role)->where('name', 'LIKE', '%'. $request->search.'%')->orderby('name','ASC')->simplePaginate(5);
         }
-        
+
+
 
         return view('users.index', compact('data_user'));
     }
@@ -52,24 +82,25 @@ class UserController extends Controller
         $request->validate([
             'name' => 'required|string|max:50',
             'email' => 'required|email|max:50|unique:users,email',
-            'password' => 'required|string|min:8',
+            'password' => 'required|string',
             'role' => 'required|string|in:admin,user'
         ], [
             'name.required' => 'Nama harus diisi',
             'email.required' => 'Email harus diisi',
             'email.unique' => 'Email sudah terdaftar',
             'password.required' => 'Password harus diisi',
-            'password.min' => 'Password harus minimal 8 karakter',
             'role.required' => 'Role harus diisi',
             'role.in' => 'Role harus admin atau user',
+        ], [
+
         ]);
-            
+
 
 
         User::create([
             'name' => $request->name,
             'email' => $request->email,
-            'password' => $request->password,   
+            'password' => bcrypt($request->password),
             'role' => $request->role
         ]);
         return redirect()->route('user.data_user');
@@ -90,7 +121,7 @@ class UserController extends Controller
     {
         //mengambil data user berdasarkan ID untuk diedit
         $data = User::find($id);
-        
+
         // Mengembalikan view untuk form edit obat
         return view('users.edit', [
             'item' => $data
@@ -118,8 +149,8 @@ class UserController extends Controller
             'name.max' => 'Maksimal 100 karakter',
             'password.min' => 'Password minimal 8 karakter'
         ]);
-        
-        //mengupdate data user berdasarkan ID 
+
+        //mengupdate data user berdasarkan ID
         $user = User::where('id', $id)->first();
         $user->name = $request->name;
         $user->email = $request->email;
@@ -128,10 +159,10 @@ class UserController extends Controller
             $user->password = bcrypt($request->password);
         }
         $user->save();
-        
+
         return redirect()->route('user.data_user')->with('success', 'Berhasil Mengedit Data!');
 
-        
+
     }
 
     /**
@@ -143,7 +174,7 @@ class UserController extends Controller
         {
             // Mencari data obat berdasarkan ID
             $deletedata = User::find($id);
-    
+
             // Jika data ditemukan dan berhasil dihapus
             if ($deletedata && $deletedata->delete()) {
                 return redirect()->back()->with('success', 'Berhasil Menghapus Data!');
