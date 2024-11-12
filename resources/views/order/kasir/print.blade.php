@@ -128,9 +128,8 @@
 </head>
 
 <body>
-    <div id="button-group">
-        <a href="#" onclick="window.print(); return false;" class="btn">Print (.pdf)</a>
-        <a href="{{ route('pembelian.formulir') }}" class="btn">Kembali</a>
+    <div class="d-flex justify-content-end mb-3">
+        <a href="{{ route('pembelian.download_pdf', $order['id']) }}" class="btn">Download PDF</a>
     </div>
 
     <div id="receipt">
@@ -148,12 +147,14 @@
         <div id="table">
             <table>
                 <tr class="tabletitle">
+                    <th class="name">Kasir</th>
                     <th class="item">Obat</th>
                     <th class="quantity">Jumlah</th>
                     <th class="rate">Harga</th>
                 </tr>
                 @foreach ($order['medicines'] as $medicine)
                     <tr class="service">
+                        <td class="tableitem">{{ $order['user']['name'] }}</td>
                         <td class="tableitem">{{ $medicine['medicines'] }}</td>
                         <td class="tableitem">{{ $medicine['quantity'] }}</td>
                         <td class="tableitem">Rp.{{ number_format($medicine['price'], 0, ',', '.') }}</td>

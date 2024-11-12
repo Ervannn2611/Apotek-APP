@@ -5,8 +5,15 @@
         <div class="d-flex justify-content-end mb-3">
             <a href="{{ route('pembelian.formulir') }}" class="btn btn-primary">+ Tambah</a>
         </div>
+        <div class="col-lg-6 col-md-6 mb-2">
+            <form class="d-flex" role="search" action="{{ url()->current() }}" method="GET">
+                <input type="date" class="form-control me-2" name="search" placeholder="Cari Obat" aria-label="Search">
+                <button class="btn btn-outline-success" type="submit">Cari</button>
+            </form>
+        </div>
 
         <h2 class="mb-4" style="text-align: center; font-weight: bold; font-size: 22px;">Data Pembelian: {{ Auth::user()->name }}</h2>
+
 
         <style>
             .table-striped tbody tr:nth-of-type(odd) {
@@ -42,8 +49,9 @@
                         <td>Rp.{{ number_format($order->total_price, 0, ',', '.') }}</td>
                         <td>{{ \carbon\carbon::create($order->created_at)->locale('id')->isoformat('D MMMM, Y HH:mm:ss') }}</td>
                         <td>
-                            <a href="{{ route('pembelian.print', $order->id) }}" class="btn btn-secondary btn-sm">Cetak Struk</a>
+                            <a href="{{ route('pembelian.print', $order->id) }}" class="btn btn-secondary btn-sm">Download</a>
                         </td>
+
                     </tr>
                 @endforeach
             </tbody>

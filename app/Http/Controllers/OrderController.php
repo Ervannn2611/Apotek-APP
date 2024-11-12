@@ -7,6 +7,7 @@ use App\Models\Medicine;
 use App\Models\Order;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 
 class OrderController extends Controller
@@ -14,11 +15,21 @@ class OrderController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         //
-        $orders = Order::where('user_id', Auth::user()->id)->simplePaginate(5);
+
+        $orders = Order::where('user_id', Auth::user()->id)->where('created_at', 'like', '%'.$request->search.'%')->simplePaginate(5);
+        $orders->appends(['search' => $request->search]);
         return view('order.kasir.kasir', compact('orders'));
+    }
+
+    public function downloadPDF($id) {
+        $order = Order::where('id', $id)->first()->toArray();
+
+        view()->share('order', $order);
+        $pdf = PDF::loadview('order.kasir.pdf', $order);
+        return $pdf->download('struk-pembelian.pdf');
     }
 
     /**

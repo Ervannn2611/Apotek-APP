@@ -37,6 +37,7 @@ Route::middleware(['isLogin'])->group(function () {
             Route::delete('/hapus/{id}', [UserController::class, 'destroy'])->name('hapus');
             Route::get('/edit/{id}', [UserController::class, 'edit'])->name('edit');
             Route::patch('/edit/{id}', [UserController::class, 'update'])->name('edit.formulir');
+
         });
     });
 
@@ -46,7 +47,8 @@ Route::middleware(['isLogin'])->group(function () {
             Route::get('/order', [OrderController::class, 'index'])->name('order');
             Route::get('/formulir', [OrderController::class, 'create'])->name('formulir');
             Route::post('/formulir', [OrderController::class, 'store'])->name('proses');
-            Route::get('/cetak{id}', [OrderController::class, 'show'])->name('print');
+            Route::get('/cetak/{id}', [OrderController::class, 'show'])->name('print');
+            Route::get('download-pdf/{id}', [OrderController::class, 'downloadPDF'])->name('download_pdf');
         });
     });
 
