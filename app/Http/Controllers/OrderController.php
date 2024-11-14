@@ -8,21 +8,36 @@ use App\Models\Order;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Barryvdh\DomPDF\Facade\Pdf;
-
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\OrderExport;
 
 class OrderController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
+    public function exportExcel() {
+        return Excel::download(new OrderExport, 'rekap-pembelian.xlsx');
+    }
+
+
     public function index(Request $request)
     {
         //
 
         $orders = Order::where('user_id', Auth::user()->id)->where('created_at', 'like', '%'.$request->search.'%')->simplePaginate(5);
         $orders->appends(['search' => $request->search]);
+
         return view('order.kasir.kasir', compact('orders'));
     }
+    public function indexAdmin(Request $request) {
+
+        $orders = Order::with('user')->where('created_at', 'like', '%'.$request->search.'%')->simplePaginate(5);
+        $orders->appends(['search' => $request->search]);
+
+        return view('order.admin.data', compact('orders'));
+    }
+
 
     public function downloadPDF($id) {
         $order = Order::where('id', $id)->first()->toArray();

@@ -104,10 +104,10 @@
     <div class="sidebar {{ Auth::check() ? 'active' : 'd-none' }}">
         @if (Auth::user()->role == 'admin')
             <a href="{{ route('user.data_user') }}" class="{{ Request::routeIs('user.data_user') ? 'active' : '' }}">Kelola Akun</a>
+            <a href="{{ route('pembelian.admin') }}" class="{{ Request::routeIs('pembelian.admin') ? 'active' : '' }}">Data Pembelian</a>
             <a href="{{ route('landing_page') }}" class="{{ Request::routeIs('landing_page') ? 'active' : '' }}">Dashboard</a>
             <a href="{{ route('obat.data') }}" class="{{ Request::routeIs('obat.data') ? 'active' : '' }}">Data Obat</a>
             <a href="#" class="{{ Request::routeIs('stok') ? 'active' : '' }}">Stok</a>
-            <a href="{{ route('pembelian.formulir') }}" class="{{ Request::routeIs('pembelian.formulir') ? 'active' : '' }}">Pembelian</a>
             <a href="{{ route('logout') }}" class="{{ Request::routeIs('logout') ? 'active' : '' }}">Logout</a>
         @elseif (Auth::user()->role == 'user')
             <a href="{{ route('landing_page') }}" class="{{ Request::routeIs('landing_page') ? 'active' : '' }}">Dashboard</a>

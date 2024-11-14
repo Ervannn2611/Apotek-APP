@@ -2,15 +2,12 @@
 
 @section('content')
     <div class="container mt-3">
-        <div class="d-flex justify-content-end mb-3">
-            <a href="{{ route('pembelian.formulir') }}" class="btn btn-primary">+ Tambah</a>
-        </div>
         <div class="col-lg-6 col-md-6 mb-2">
-            <form class="d-flex" role="search" action="{{ url()->current() }}" method="GET">
+            <form class="d-flex" role="search" action="" method="GET">
                 <input type="date" class="form-control me-2" name="search" placeholder="Cari Obat" aria-label="Search" value="{{ request('search') }}">
                 <button class="btn btn-outline-success" type="submit">Cari</button>
                 <div class="d-flex justify-content-end ">
-                    <a href="{{ route('pembelian.order') }}" class="btn btn-primary" style="margin-left:5px ">Clear</a>
+                    <a href="{{ route('pembelian.admin') }}" class="btn btn-primary" style="margin-left:5px ">Clear</a>
                 </div>
             </form>
         </div>
@@ -28,15 +25,17 @@
             }
         </style>
 
+        <a href="{{ route('pembelian.admin.excel') }}" class="btn btn-success">Export Excel</a>
+
         <table class="table table-bordered table-striped mt-3" style="border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
             <thead class="thead-light">
                 <tr>
                     <th style="width: 5%;">#</th>
                     <th style="wudht: 25%;">Customer</th>
                     <th style="width: 40%;">Obat</th>
+                    <th style="width: 15%;">Nama Kasir</th>
                     <th style="width: 20%;">Total Harga</th>
                     <th style="width: 20%;">Tanggal Pembelian</th>
-                    <th style="width: 15%;">Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -51,11 +50,9 @@
                                 @endforeach
                             </ul>
                         </td>
+                        <td>{{ $order['user']['name'] }}</td>
                         <td>Rp.{{ number_format($order->total_price, 0, ',', '.') }}</td>
                         <td>{{ \carbon\carbon::create($order->created_at)->locale('id')->isoformat('D MMMM, Y HH:mm:ss') }}</td>
-                        <td>
-                            <a href="{{ route('pembelian.download_pdf', $order->id) }}" class="btn btn-secondary btn-sm">Download</a>
-                        </td>
 
                     </tr>
                 @endforeach

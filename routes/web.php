@@ -18,6 +18,8 @@ Route::middleware(['isLogin'])->group(function () {
     Route::middleware(['role:admin'])->group(function () {
         // Mengelola data obat
         Route::get('/data-obat', [MedicineController::class, 'index'])->name('data_obat');
+        Route::get('/order', [OrderController::class, 'indexAdmin'])->name('pembelian.admin');
+        Route::get('/order/export-excel', [OrderController::class, 'exportExcel'])->name('pembelian.admin.excel');
 
         Route::prefix('/obat')->name('obat.')->group(function () {
             Route::get('/tambah-obat', [MedicineController::class, 'create'])->name('tambah_obat');
